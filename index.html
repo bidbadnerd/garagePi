@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Test App 1</title>
+<meta name="viewport" content="width=device-width,
+initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
+</head>
+<body>
+<div class="container">
+<div class="form-signin">
+<h1 class="form-signin-heading">Test App 1</h1>
+<h2 class="form-signin-heading">Please sign in via Synology
+Oauth </h2>
+<button id="login-button">SSO Login</button>
+</div>
+</div>
+</body>
+<script type="text/javascript" src="jquery-2.1.1.min.js"></script>
+<script type="text/javascript"
+src="http://10.0.0.118:5000/webman/sso/synoSSO-1.0.0.js"></script>
+<script>
+//SYNOSSO Javascript SDK don't depend on jQuery!
+//SSO Server: 10.0.0.118
+//SSO Client: 10.0.0.180
+$ (function(){
+SYNOSSO.init({
+oauthserver_url: 'http://10.0.0.118:5000',
+app_id: '153fcb35b01571b49cb0adca3a4bda40',
+redirect_uri: 'http://10.0.0.180/ssorelay.html',
+//redirect URI have to be the same as the one registered in SSO server, and
+should be a plain text html file
+callback: authCallback
+})
+login
+
+function authCallback(response){
+console.log("client side");
+if('not_login' === response.status) { //user not
+console.log (response.status);
+} else if('login' === response.status) {
+console.log (response.status);
+console.log (response.access_token);
+
+alert("access token: "+
+response.access_token);
+$.ajax ({ url : '/login_backend.php' ,
+cache: false,
+type: 'GET',
+data:{
+accesstoken:
+response.access_token
+},
+error: function(xhr){
+alert("ajax error");
+//deal with errors
+},
+success: function(response){
+alert("success");
+//deal with success
+}
+});
+} else {
+alert("error");
+//deal with errors;
+}
+})()
+</script>
+</html>
+}
+var login_button = document.getElementById("login-button");
+login_button.addEventListener('click' , SYNOSSO.login);
